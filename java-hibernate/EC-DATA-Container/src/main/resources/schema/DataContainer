@@ -1,0 +1,66 @@
+-- Employee table
+CREATE TABLE employee (
+    employee_id SERIAL PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    position VARCHAR(50),
+    hire_date DATE,
+    salary NUMERIC(10,2)
+);
+
+-- Customer table
+CREATE TABLE customer (
+    customer_id SERIAL PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    email VARCHAR(100),
+    phone VARCHAR(20),
+    employee_id INT REFERENCES employee(employee_id) -- links customer to employee
+);
+
+
+INSERT INTO employee (first_name, last_name, position, hire_date, salary)
+VALUES ('Alice', 'Johnson', 'Sales Manager', '2020-01-15', 60000),
+       ('David', 'Lee', 'Account Executive', '2021-06-01', 45000);
+
+INSERT INTO customer (first_name, last_name, email, phone, employee_id)
+VALUES ('Bob', 'Smith', 'bob.smith@email.com', '123-456-7890', 1),
+       ('Carol', 'Brown', 'carol.brown@email.com', '987-654-3210', 2);
+
+
+
+
+
+
+
+-------------
+
+
+-- Employee table
+CREATE TABLE employee (
+    employeeid SERIAL PRIMARY KEY,   -- renamed: no underscore
+    firstname VARCHAR(50),
+    lastname VARCHAR(50),
+    position VARCHAR(50),
+    hiredate DATE,
+    salary NUMERIC(10,2)
+);
+
+-- Customer table
+CREATE TABLE customer (
+    customerid SERIAL PRIMARY KEY,   -- renamed: no underscore
+    firstname VARCHAR(50),
+    lastname VARCHAR(50),
+    email VARCHAR(100),
+    phone VARCHAR(20),
+    employee_id INT REFERENCES employee(employeeid) -- keep underscore only here
+);
+
+-- Sample data
+INSERT INTO employee (firstname, lastname, position, hiredate, salary)
+VALUES ('Alice', 'Johnson', 'Sales Manager', '2020-01-15', 60000),
+       ('David', 'Lee', 'Account Executive', '2021-06-01', 45000);
+
+INSERT INTO customer (firstname, lastname, email, phone, employee_id)
+VALUES ('Bob', 'Smith', 'bob.smith@email.com', '123-456-7890', 1),
+       ('Carol', 'Brown', 'carol.brown@email.com', '987-654-3210', 2);
