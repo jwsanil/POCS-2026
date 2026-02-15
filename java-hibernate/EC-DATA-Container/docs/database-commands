@@ -1,1 +1,75 @@
 SELECT usename FROM pg_user;
+
+
+
+-- ===============================
+-- INNER JOIN (Only matched records)
+-- ===============================
+SELECT
+    e.employeeid,
+    e.firstname AS emp_firstname,
+    e.lastname  AS emp_lastname,
+    c.customerid,
+    c.firstname AS cust_firstname,
+    c.lastname  AS cust_lastname
+FROM employee e
+INNER JOIN customer c
+ON e.employeeid = c.employee_id;
+
+
+-- ===============================
+-- LEFT JOIN (All employees + matching customers)
+-- ===============================
+SELECT
+    e.employeeid,
+    e.firstname AS emp_firstname,
+    e.lastname  AS emp_lastname,
+    c.customerid,
+    c.firstname AS cust_firstname,
+    c.lastname  AS cust_lastname
+FROM employee e
+LEFT JOIN customer c
+ON e.employeeid = c.employee_id;
+
+
+-- ===============================
+-- RIGHT JOIN (All customers + matching employees)
+-- ===============================
+SELECT
+    e.employeeid,
+    e.firstname AS emp_firstname,
+    e.lastname  AS emp_lastname,
+    c.customerid,
+    c.firstname AS cust_firstname,
+    c.lastname  AS cust_lastname
+FROM employee e
+RIGHT JOIN customer c
+ON e.employeeid = c.employee_id;
+
+
+-- ===============================
+-- FULL JOIN (All records from both tables)
+-- ===============================
+SELECT
+    e.employeeid,
+    e.firstname AS emp_firstname,
+    e.lastname  AS emp_lastname,
+    c.customerid,
+    c.firstname AS cust_firstname,
+    c.lastname  AS cust_lastname
+FROM employee e
+FULL JOIN customer c
+ON e.employeeid = c.employee_id;
+
+
+-- ===============================
+-- CROSS JOIN (All possible combinations)
+-- ===============================
+SELECT
+    e.employeeid,
+    e.firstname AS emp_firstname,
+    c.customerid,
+    c.firstname AS cust_firstname
+FROM employee e
+CROSS JOIN customer c;
+

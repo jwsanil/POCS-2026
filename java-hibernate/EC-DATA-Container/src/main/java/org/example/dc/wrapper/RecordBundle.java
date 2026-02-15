@@ -19,8 +19,16 @@ public sealed class RecordBundle
     public CustomerRecord customer() { return customer; }
 
     // Extra info: convenience method
+    // Extra info: convenience method with safe null handling
     public String summary() {
-        return "Employee: " + employee.firstName() + " " + employee.lastName()
-                + " | Customer: " + customer.firstName() + " " + customer.lastName();
+        String employeeName = employee != null
+                ? employee.firstName() + " " + employee.lastName()
+                : "Unassigned";
+
+        String customerName = customer != null
+                ? customer.firstName() + " " + customer.lastName()
+                : "Unknown Customer";
+
+        return "Employee: " + employeeName + " | Customer: " + customerName;
     }
 }

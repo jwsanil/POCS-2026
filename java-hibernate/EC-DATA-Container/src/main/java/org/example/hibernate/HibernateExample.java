@@ -102,7 +102,6 @@ public class HibernateExample {
             // Fetch all customers as entities
             List<Customer> customers = session.createQuery("from Customer", Customer.class).getResultList();
 
-            // Convert entities to immutable CustomerRecord DTOs
             List<CustomerRecord> customerRecords = customers.stream()
                     .map(c -> new CustomerRecord(
                             c.getCustomerId(),
@@ -110,9 +109,10 @@ public class HibernateExample {
                             c.getLastName(),
                             c.getEmail(),
                             c.getPhone(),
-                            c.getEmployee().getEmployeeId()
+                            c.getEmployee() != null ? c.getEmployee().getEmployeeId() : null
                     ))
                     .toList();
+
 
             System.out.println("=== Customers (DTOs) ===");
             customerRecords.forEach(System.out::println);

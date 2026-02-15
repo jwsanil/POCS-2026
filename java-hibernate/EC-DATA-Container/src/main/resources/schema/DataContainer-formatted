@@ -1,3 +1,7 @@
+-- Drop tables if they already exist
+DROP TABLE IF EXISTS customer;
+DROP TABLE IF EXISTS employee;
+
 -- Employee table
 CREATE TABLE employee (
     employeeid SERIAL PRIMARY KEY,
@@ -45,3 +49,25 @@ VALUES
     ('Isabella', 'Green', 'isabella.green@email.com', '555-555-4444', 8),
     ('Grace', 'Mitchell', 'grace.mitchell@email.com', '555-111-2222', NULL),
     ('Lucas', 'Roberts', 'lucas.roberts@email.com', '555-333-4444', NULL);
+
+
+ALTER TABLE employee
+ADD COLUMN IF NOT EXISTS position VARCHAR(50);
+
+ALTER TABLE customer
+RENAME CONSTRAINT fkiv4yye896nrvevqc0vpmmskmn
+TO fk_customer_employee;
+
+
+
+
+ALTER TABLE customer
+DROP CONSTRAINT fk_customer_employee;
+
+DROP TABLE employee;
+
+
+ALTER TABLE customer
+ADD CONSTRAINT fk_customer_employee
+FOREIGN KEY (employee_id)
+REFERENCES employee(employeeid);

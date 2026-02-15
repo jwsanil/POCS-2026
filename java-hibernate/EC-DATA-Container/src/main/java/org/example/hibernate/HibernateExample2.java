@@ -12,8 +12,9 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class HibernateExample2 {
 
@@ -27,9 +28,8 @@ public class HibernateExample2 {
                 .buildSessionFactory();
 
         try {
-            // Uncomment one of these depending on what you want to do:
-            // insertData();   // Run once to insert sample data
-            selectData();      // Run anytime to query and print data
+            insertData();   // Run once to insert sample data
+            selectData();   // Run anytime to query and print data
         } finally {
             factory.close();
         }
@@ -40,46 +40,46 @@ public class HibernateExample2 {
             session.beginTransaction();
 
             // Create employees
-            Employee e1 = new Employee();
-            e1.setFirstName("Alice");
-            e1.setLastName("Johnson");
-            e1.setPosition("Sales Manager");
-            e1.setHireDate(LocalDate.of(2020, 1, 15));
-            e1.setSalary(60000);
+            Employee e1 = createEmployee("Alice", "Johnson", "Sales Manager", LocalDate.of(2020, 1, 15), 60000);
+            Employee e2 = createEmployee("David", "Lee", "Account Executive", LocalDate.of(2021, 6, 1), 45000);
+            Employee e3 = createEmployee("Ava", "Hall", "Customer Success Manager", LocalDate.of(2023, 2, 14), 47000);
 
-            Employee e2 = new Employee();
-            e2.setFirstName("David");
-            e2.setLastName("Lee");
-            e2.setPosition("Account Executive");
-            e2.setHireDate(LocalDate.of(2021, 6, 1));
-            e2.setSalary(45000);
-
-            // Save employees
             session.persist(e1);
             session.persist(e2);
+            session.persist(e3);
 
             // Create customers linked to employees
-            Customer c1 = new Customer();
-            c1.setFirstName("Bob");
-            c1.setLastName("Smith");
-            c1.setEmail("bob.smith@email.com");
-            c1.setPhone("123-456-7890");
-            c1.setEmployee(e1);
+            Customer c1 = createCustomer("Bob", "Smith", "bob.smith@email.com", "123-456-7890", e1);
+            Customer c2 = createCustomer("Carol", "Brown", "carol.brown@email.com", "987-654-3210", e3);
+            Customer c3 = createCustomer("Lucas", "Roberts", "lucas.roberts@email.com", "555-333-4444", null); // Unassigned
 
-            Customer c2 = new Customer();
-            c2.setFirstName("Carol");
-            c2.setLastName("Brown");
-            c2.setEmail("carol.brown@email.com");
-            c2.setPhone("987-654-3210");
-            c2.setEmployee(e2);
-
-            // Save customers
             session.persist(c1);
             session.persist(c2);
+            session.persist(c3);
 
             session.getTransaction().commit();
             System.out.println("Data inserted successfully!");
         }
+    }
+
+    private static Employee createEmployee(String firstName, String lastName, String position, LocalDate hireDate, double salary) {
+        Employee e = new Employee();
+        e.setFirstName(firstName);
+        e.setLastName(lastName);
+        e.setPosition(position);
+        e.setHireDate(hireDate);
+        e.setSalary(salary);
+        return e;
+    }
+
+    private static Customer createCustomer(String firstName, String lastName, String email, String phone, Employee employee) {
+        Customer c = new Customer();
+        c.setFirstName(firstName);
+        c.setLastName(lastName);
+        c.setEmail(email);
+        c.setPhone(phone);
+        c.setEmployee(employee); // Can be null
+        return c;
     }
 
     private static void selectData() {
@@ -90,38 +90,39 @@ public class HibernateExample2 {
             List<Employee> employees = session.createQuery("from Employee", Employee.class).getResultList();
             List<Customer> customers = session.createQuery("from Customer", Customer.class).getResultList();
 
-            // Build bundles
-            List<RecordBundle> bundles = new ArrayList<>();
+            // Build bundles using Java 8 streams and Optional
+            List<RecordBundle> bundles = customers.stream()
+                    .map(c -> {
+                        Optional<Employee> empOpt = Optional.ofNullable(c.getEmployee());
 
-            for (Customer c : customers) {
-                Employee e = c.getEmployee();
+                        EmployeeRecord employeeRecord = empOpt
+                                .map(e -> new EmployeeRecord(
+                                        e.getEmployeeId(),
+                                        e.getFirstName(),
+                                        e.getLastName(),
+                                        e.getPosition(),
+                                        e.getHireDate(),
+                                        e.getSalary()))
+                                .orElse(null);
 
-                EmployeeRecord employeeRecord = new EmployeeRecord(
-                        e.getEmployeeId(),
-                        e.getFirstName(),
-                        e.getLastName(),
-                        e.getPosition(),
-                        e.getHireDate(),
-                        e.getSalary()
-                );
+                        CustomerRecord customerRecord = new CustomerRecord(
+                                c.getCustomerId(),
+                                c.getFirstName(),
+                                c.getLastName(),
+                                c.getEmail(),
+                                c.getPhone(),
+                                empOpt.map(Employee::getEmployeeId).orElse(null)
+                        );
 
-                CustomerRecord customerRecord = new CustomerRecord(
-                        c.getCustomerId(),
-                        c.getFirstName(),
-                        c.getLastName(),
-                        c.getEmail(),
-                        c.getPhone(),
-                        e.getEmployeeId()
-                );
-
-                // Business logic: decide bundle type
-                if (employeeRecord.salary() > 100000) {
-                    bundles.add(new BusinessContract(employeeRecord, customerRecord,
-                            "CONTRACT-" + employeeRecord.employeeId()));
-                } else {
-                    bundles.add(new BusinessRelationship(employeeRecord, customerRecord, "Standard"));
-                }
-            }
+                        // Business logic
+                        if (employeeRecord != null && employeeRecord.salary() > 100000) {
+                            return new BusinessContract(employeeRecord, customerRecord,
+                                    "CONTRACT-" + employeeRecord.employeeId());
+                        } else {
+                            return new BusinessRelationship(employeeRecord, customerRecord, "Standard");
+                        }
+                    })
+                    .collect(Collectors.toList());
 
             // Print results
             System.out.println("=== Bundles (Business DTOs) ===");
