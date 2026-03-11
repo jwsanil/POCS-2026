@@ -8,44 +8,12 @@ The EC-DATA-Container project demonstrates the integration of Hibernate ORM and 
 ### Overview
 The application is structured into distinct modules, each with a specific responsibility. This modular design ensures clarity, maintainability, and scalability.
 
-### Modules and Their Responsibilities
-
-#### 1. **Domain Module**
-- **Purpose**: Represents the core business entities.
-- **Key Classes**:
-  - `Customer`: Represents customer data.
-  - `Employee`: Represents employee data.
-- **Responsibilities**:
-  - Define the structure of business entities.
-  - Provide getters and setters for entity attributes.
-
-#### 2. **Data Access Module**
-- **Purpose**: Handles database interactions.
-- **Key Classes**:
-  - `HibernateExample`: Demonstrates Hibernate ORM usage.
-  - `JdbcExample`: Demonstrates JDBC database operations.
-- **Responsibilities**:
-  - Perform CRUD operations on the database.
-  - Use Hibernate for ORM and JDBC for direct queries.
-
-#### 3. **Wrapper Module**
-- **Purpose**: Provides abstractions for business logic.
-- **Key Classes**:
-  - `RecordBundle`: Encapsulates `CustomerRecord` and `EmployeeRecord`.
-  - `BusinessContract`: Represents a business contract.
-  - `BusinessRelationship`: Represents a business relationship.
-- **Responsibilities**:
-  - Abstract and encapsulate domain entities.
-  - Implement additional business logic.
-
-#### 4. **Application Module**
-- **Purpose**: Acts as the entry point and orchestrates the application.
-- **Key Classes**:
-  - `Main`: Entry point for the application.
-  - `CoreExamples`: Utility class for core examples.
-- **Responsibilities**:
-  - Coordinate between modules to execute workflows.
-  - Serve as the starting point for the application.
+### Project Intent
+- This project is intended as a concise, example-driven reference to demonstrate:
+  - Modeling simple domain entities (Customer and Employee).
+  - Persisting and querying those entities using Hibernate (ORM).
+  - Performing direct database operations with JDBC for comparison and learning.
+  - Showing lightweight business abstractions that wrap records for basic workflows.
 
 ### Simplified Design Diagram
 Below is a simplified design diagram illustrating the modules and their interactions:
@@ -68,10 +36,9 @@ Below is a simplified design diagram illustrating the modules and their interact
 ```
 
 ### Insights
-1. **Domain Module**: Focuses on defining the structure of business entities.
-2. **Data Access Module**: Handles all database-related operations.
-3. **Wrapper Module**: Adds abstraction and encapsulates business logic.
-4. **Application Module**: Orchestrates the application and serves as the entry point.
+- The primary intent is educational: illustrate domain modeling, basic ORM usage with Hibernate, and JDBC patterns.
+- Keep examples focused and minimal so readers can quickly grasp the core concepts without being distracted by implementation details.
+- Use the wrapper layer to show how simple business logic can be composed without adding heavy framework complexity.
 
 ### Recommendations
 1. **Simplify Business Logic**: Focus on core use cases to reduce complexity.
