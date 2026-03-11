@@ -1,0 +1,82 @@
+# Business Document for EC-DATA-Container
+
+## Purpose
+The EC-DATA-Container project demonstrates the integration of Hibernate ORM and JDBC for managing data containers. It is designed to provide a modular, scalable, and maintainable solution for handling customer and employee data.
+
+## High-Level Design
+
+### Overview
+The application is structured into distinct modules, each with a specific responsibility. This modular design ensures clarity, maintainability, and scalability.
+
+### Modules and Their Responsibilities
+
+#### 1. **Domain Module**
+- **Purpose**: Represents the core business entities.
+- **Key Classes**:
+  - `Customer`: Represents customer data.
+  - `Employee`: Represents employee data.
+- **Responsibilities**:
+  - Define the structure of business entities.
+  - Provide getters and setters for entity attributes.
+
+#### 2. **Data Access Module**
+- **Purpose**: Handles database interactions.
+- **Key Classes**:
+  - `HibernateExample`: Demonstrates Hibernate ORM usage.
+  - `JdbcExample`: Demonstrates JDBC database operations.
+- **Responsibilities**:
+  - Perform CRUD operations on the database.
+  - Use Hibernate for ORM and JDBC for direct queries.
+
+#### 3. **Wrapper Module**
+- **Purpose**: Provides abstractions for business logic.
+- **Key Classes**:
+  - `RecordBundle`: Encapsulates `CustomerRecord` and `EmployeeRecord`.
+  - `BusinessContract`: Represents a business contract.
+  - `BusinessRelationship`: Represents a business relationship.
+- **Responsibilities**:
+  - Abstract and encapsulate domain entities.
+  - Implement additional business logic.
+
+#### 4. **Application Module**
+- **Purpose**: Acts as the entry point and orchestrates the application.
+- **Key Classes**:
+  - `Main`: Entry point for the application.
+  - `CoreExamples`: Utility class for core examples.
+- **Responsibilities**:
+  - Coordinate between modules to execute workflows.
+  - Serve as the starting point for the application.
+
+### Simplified Design Diagram
+Below is a simplified design diagram illustrating the modules and their interactions:
+
+```
++-------------------+       +-------------------+
+|   Domain Module   |       |  Wrapper Module   |
+|-------------------|       |-------------------|
+| - Customer        |<----->| - RecordBundle    |
+| - Employee        |       | - BusinessContract|
++-------------------+       | - BusinessRel.    |
+                            +-------------------+
+
++-------------------+       +-------------------+
+| Data Access Module|       | Application Module|
+|-------------------|       |-------------------|
+| - HibernateEx.    |<----->| - Main            |
+| - JdbcExample     |       | - CoreExamples    |
++-------------------+       +-------------------+
+```
+
+### Insights
+1. **Domain Module**: Focuses on defining the structure of business entities.
+2. **Data Access Module**: Handles all database-related operations.
+3. **Wrapper Module**: Adds abstraction and encapsulates business logic.
+4. **Application Module**: Orchestrates the application and serves as the entry point.
+
+### Recommendations
+1. **Simplify Business Logic**: Focus on core use cases to reduce complexity.
+2. **Enhance Documentation**: Add comments to explain the purpose of each class and method.
+3. **Optimize Performance**: Use caching for frequently accessed data.
+
+---
+Generated on: March 11, 2026
