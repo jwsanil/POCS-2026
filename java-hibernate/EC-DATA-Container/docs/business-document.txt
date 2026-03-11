@@ -1,49 +1,55 @@
-# Business Document for EC-DATA-Container
+# Customer–Employee Relationship (business-level)
 
-## Purpose
-The EC-DATA-Container project demonstrates the integration of Hibernate ORM and JDBC for managing data containers. It is designed to provide a modular, scalable, and maintainable solution for handling customer and employee data.
+Description:
+A business bundle links an Employee and a Customer into a single business concept. At the business layer the pair is represented either as a
+- BusinessRelationship (contains a relationshipType)
+- BusinessContract (contains a contractId)
 
-## High-Level Design
+High-level diagram (ASCII):
 
-### Overview
-The application is structured into distinct modules, each with a specific responsibility. This modular design ensures clarity, maintainability, and scalability.
+    +-----------+      interacts with      +-----------+
+    | Employee  | -----------------------> | Customer  |
+    +-----------+                         +-----------+
+           \                                 /
+            \                               /
+             \                             /
+              v                           v
+        +---------------------------------------+
+        |           Business Bundle             |
+        |  - BusinessRelationship (relationshipType)
+        |  - BusinessContract     (contractId)  |
+        +---------------------------------------+
 
-### Project Intent
-- This project is intended as a concise, example-driven reference to demonstrate:
-  - Modeling simple domain entities (Customer and Employee).
-  - Persisting and querying those entities using Hibernate (ORM).
-  - Performing direct database operations with JDBC for comparison and learning.
-  - Showing lightweight business abstractions that wrap records for basic workflows.
+(End of addition)
 
-### Simplified Design Diagram
-Below is a simplified design diagram illustrating the modules and their interactions:
+Concept:
+A lightweight business abstraction that groups an employee and a customer so higher-level rules and presentation logic can operate without depending on persistence entities. Bundles expose only the data needed for decisions and summaries.
 
-```
-+-------------------+       +-------------------+
-|   Domain Module   |       |  Wrapper Module   |
-|-------------------|       |-------------------|
-| - Customer        |<----->| - RecordBundle    |
-| - Employee        |       | - BusinessContract|
-+-------------------+       | - BusinessRel.    |
-                            +-------------------+
+Summary & Business Intent:
+- Summary: `RecordBundle.summary()` provides a short, human-readable one-line description combining the employee's and customer's names and the bundle-specific detail (relationship type or contract id). It's intended for logs, simple UIs, and quick inspections.
 
-+-------------------+       +-------------------+
-| Data Access Module|       | Application Module|
-|-------------------|       |-------------------|
-| - HibernateEx.    |<----->| - Main            |
-| - JdbcExample     |       | - CoreExamples    |
-+-------------------+       +-------------------+
-```
+- Business intent: Bundles represent the business-level relationship between an Employee and a Customer without exposing persistence details. They exist so business rules, reporting, and presentation logic operate on a stable, focused data shape (the two records plus minimal metadata).
 
-### Insights
-- The primary intent is educational: illustrate domain modeling, basic ORM usage with Hibernate, and JDBC patterns.
-- Keep examples focused and minimal so readers can quickly grasp the core concepts without being distracted by implementation details.
-- Use the wrapper layer to show how simple business logic can be composed without adding heavy framework complexity.
+- Logic note: Business logic consumes the bundled records (for example `employee.salary()` and `customer.status()`) to decide which bundle to create or which downstream action to take — e.g., create a `BusinessContract` when salary exceeds a threshold, otherwise create a `BusinessRelationship`. The `summary()` method is then used for display/logging after the decision.
 
-### Recommendations
-1. **Simplify Business Logic**: Focus on core use cases to reduce complexity.
-2. **Enhance Documentation**: Add comments to explain the purpose of each class and method.
-3. **Optimize Performance**: Use caching for frequently accessed data.
+Logic note (expanded):
+Business logic operates on the bundled records rather than on the raw persistence entities. This keeps rules simple, testable, and independent of Hibernate specifics. Common inputs to these rules are fields exposed by the records such as `employee.salary()`, `employee.title()`, or `customer.status()`.
 
----
-Generated on: March 11, 2026
+Decision logic (concise):
+A small, focused component maps an `EmployeeRecord` and `CustomerRecord` to a `RecordBundle`. This keeps rules testable and decoupled from persistence and presentation.
+
+High-level design (ASCII):
+
+    [EmployeeRecord]   [CustomerRecord]
+           \               /
+            \             /
+             v           v
+            +---------------------+
+            |   BundleDecider     |  (implements rule, e.g., salary threshold)
+            +---------------------+
+                     |
+           +---------+---------+
+           |                   |
+    [BusinessContract]   [BusinessRelationship]
+           |                   |
+        (contractId)       (relationshipType)
