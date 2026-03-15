@@ -1,0 +1,34 @@
+{
+  "kind": "collectionType",
+  "collectionName": "employees",
+  "info": {
+    "singularName": "employee",
+    "pluralName": "employees",
+    "displayName": "employee"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "employeeid": {
+      "type": "integer",
+      "unique": true
+    },
+    "firstname": {
+      "type": "string"
+    },
+    "lastname": {
+      "type": "string"
+    },
+    "position": {
+      "type": "string"
+    },
+    "hiredate": {
+      "type": "date"
+    },
+    "salary": {
+      "type": "decimal"
+    }
+  }
+}
