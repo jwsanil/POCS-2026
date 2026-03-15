@@ -1,0 +1,225 @@
+Strapi + PostgreSQL + Java Integration Setup
+
+1. Node Setup
+
+nvm install 20
+nvm use 20
+
+http://localhost:1337/admin
+
+2. Create Strapi Project
+
+npx create-strapi-app@latest EC-DATA-Container-new-relic-demo-strapi-cms --quickstart
+
+3. Create new collection type
+
+employee and customer
+
+Employee Collection Fields
+
+| Field Name | Type   | Notes           |
+| ---------- | ------ | --------------- |
+| employeeid | Number | unique          |
+| firstname  | Text   |                 |
+| lastname   | Text   |                 |
+| position   | Text   |                 |
+| hiredate   | Date   |                 |
+| salary     | Number | decimal allowed |
+
+Customer Collection Fields
+
+| Field Name | Type   | Notes  |
+| ---------- | ------ | ------ |
+| customerid | Number | unique |
+| firstname  | Text   |        |
+| lastname   | Text   |        |
+| email      | Email  |        |
+| phone      | Text   |        |
+
+Relation field in customer
+
+type: relation
+employee
+
+4. Sample Data
+
+employeeid = 101
+firstname = John
+lastname = Smith
+position = Manager
+hiredate = 01/01/2024
+salary = 120000
+
+customer data:
+
+customerid = 1
+firstname = John
+lastname = Carter
+email = [john@test.com](mailto:john@test.com)
+phone = 9991111111
+employee = Alice Johnson
+
+5. Relation Table Created by Strapi
+
+Strapi creates relation in separate table:
+
+select * from customers_employee_lnk;
+
+id	customer_id	employee_id
+1	1	1
+2	2	2
+
+6. API Testing
+
+C:\Users\anilj>curl http://localhost:1337/api/employees
+
+{"data":[{"id":2,"documentId":"kpajoe6da58wvj2bmcbu12nh","employeeid":101,"firstname":"Alice","lastname":"Smith","position":"Manager","hiredate":null,"salary":10000,"createdAt":"2026-03-15T06:46:57.535Z","updatedAt":"2026-03-15T06:46:57.535Z","publishedAt":"2026-03-15T06:48:42.109Z"}],"meta":{"pagination":{"page":1,"pageSize":25,"pageCount":1,"total":1}}}
+
+C:\Users\anilj>curl http://localhost:1337/api/customers
+
+{"data":[{"id":2,"documentId":"dbwd5uo1zhfm24fbmqvh59yx","customerid":1,"firstname":"John","lastname":"Carter","email":"[john@test.com](mailto:john@test.com)","phone":"9991111111","createdAt":"2026-03-15T06:48:04.259Z","updatedAt":"2026-03-15T06:48:04.259Z","publishedAt":"2026-03-15T06:49:06.569Z"}],"meta":{"pagination":{"page":1,"pageSize":25,"pageCount":1,"total":1}}}
+
+7. Database Config Changes
+
+# Database configuration for PostgreSQL
+
+DATABASE_CLIENT=postgres
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_NAME=sample
+DATABASE_USERNAME=postgres
+DATABASE_PASSWORD=admin
+DATABASE_SSL=false
+DATABASE_SCHEMA=public
+#JWT_SECRET=pWVGZSGapvQpgKJWAW2xJg==
+
+8. Install PostgreSQL Driver
+
+npm install pg
+
+9. Restart Strapi
+
+npm run develop
+
+PS D:\github-new\POCS-2026\EC-DATA-Container-new-relic-demo-strapi-cms> npm run develop
+
+10. Hibernate Entity Change (if Hibernate used)
+
+@ManyToOne
+@JoinTable(
+name = "customers_employee_lnk",
+joinColumns = @JoinColumn(name = "customer_id"),
+inverseJoinColumns = @JoinColumn(name = "employee_id")
+)
+private Employee employee;
+
+11. Full Customer Entity Example
+
+package org.example.entity;
+
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "customers")
+public class Customer {
+
+```
+@Id
+private Long id;
+
+private Integer customerid;
+private String firstname;
+private String lastname;
+private String email;
+private String phone;
+
+@ManyToOne
+@JoinTable(
+    name = "customers_employee_lnk",
+    joinColumns = @JoinColumn(name = "customer_id"),
+    inverseJoinColumns = @JoinColumn(name = "employee_id")
+)
+private Employee employee;
+
+public Customer() {
+}
+
+public Long getId() {
+    return id;
+}
+
+public Integer getCustomerid() {
+    return customerid;
+}
+
+public void setCustomerid(Integer customerid) {
+    this.customerid = customerid;
+}
+
+public String getFirstname() {
+    return firstname;
+}
+
+public void setFirstname(String firstname) {
+    this.firstname = firstname;
+}
+
+public String getLastname() {
+    return lastname;
+}
+
+public void setLastname(String lastname) {
+    this.lastname = lastname;
+}
+
+public String getEmail() {
+    return email;
+}
+
+public void setEmail(String email) {
+    this.email = email;
+}
+
+public String getPhone() {
+    return phone;
+}
+
+public void setPhone(String phone) {
+    this.phone = phone;
+}
+
+public Employee getEmployee() {
+    return employee;
+}
+
+public void setEmployee(Employee employee) {
+    this.employee = employee;
+}
+```
+
+}
+
+12. Fresh Installation Commands
+
+npm install pg
+npm run develop
+
+13. Final API Testing
+
+curl http://localhost:1337/api/employees
+
+Result:
+
+{"data":[{"id":2,"documentId":"kpajoe6da58wvj2bmcbu12nh","employeeid":101,"firstname":"Alice","lastname":"Smith","position":"Manager","hiredate":null,"salary":10000,"createdAt":"2026-03-15T06:46:57.535Z","updatedAt":"2026-03-15T06:46:57.535Z","publishedAt":"2026-03-15T06:48:42.109Z"}],"meta":{"pagination":{"page":1,"pageSize":25,"pageCount":1,"total":1}}}
+
+curl http://localhost:1337/api/customers
+
+Result:
+
+{"data":[{"id":2,"documentId":"dbwd5uo1zhfm24fbmqvh59yx","customerid":1,"firstname":"John","lastname":"Carter","email":"[john@test.com](mailto:john@test.com)","phone":"9991111111","createdAt":"2026-03-15T06:48:04.259Z","updatedAt":"2026-03-15T06:48:04.259Z","publishedAt":"2026-03-15T06:49:06.569Z"}],"meta":{"pagination":{"page":1,"pageSize":25,"pageCount":1,"total":1}}}
+
+curl http://localhost:1337/api/customers?populate=employee
+
+Result:
+
+Customer data with employee relation included.
