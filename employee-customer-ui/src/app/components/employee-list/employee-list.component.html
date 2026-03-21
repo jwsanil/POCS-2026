@@ -1,0 +1,19 @@
+<h2>Employee List</h2>
+<table border="1" cellspacing="0" cellpadding="5">
+  <tr>
+    <th>ID</th>
+    <th>First Name</th>
+    <th>Last Name</th>
+    <th>Position</th>
+    <th>Salary</th>
+  </tr>
+  <tr *ngFor="let emp of employees">
+    <td>{{emp.id}}</td>
+    <td>{{emp.firstname}}</td>
+    <td>{{emp.lastname}}</td>
+    <td>{{emp.position}}</td>
+    <td>{{emp.salary}}</td>
+  </tr>
+</table>
+
+<a routerLink="/employees/create">Add New Employee</a>

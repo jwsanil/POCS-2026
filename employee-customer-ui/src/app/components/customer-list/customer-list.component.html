@@ -1,0 +1,23 @@
+<h2>Customer List</h2>
+
+<table border="1" cellspacing="0" cellpadding="5">
+  <tr>
+    <th>ID</th>
+    <th>Customer ID</th>
+    <th>First Name</th>
+    <th>Last Name</th>
+    <th>Email</th>
+    <th>Phone</th>
+  </tr>
+
+  <tr *ngFor="let cust of customers">
+    <td>{{cust.id}}</td>
+    <td>{{cust.customerid}}</td>
+    <td>{{cust.firstname}}</td>
+    <td>{{cust.lastname}}</td>
+    <td>{{cust.email}}</td>
+    <td>{{cust.phone}}</td>
+  </tr>
+</table>
+
+<a routerLink="/customers/create">Add New Customer</a>

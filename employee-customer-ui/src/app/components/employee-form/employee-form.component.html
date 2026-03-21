@@ -1,0 +1,25 @@
+<h2>Add Employee</h2>
+
+<form (ngSubmit)="saveEmployee()">
+
+  <label>Employee ID:</label><br>
+  <input type="number" [(ngModel)]="employee.employeeid" name="employeeid"><br><br>
+
+  <label>First Name:</label><br>
+  <input type="text" [(ngModel)]="employee.firstname" name="firstname"><br><br>
+
+  <label>Last Name:</label><br>
+  <input type="text" [(ngModel)]="employee.lastname" name="lastname"><br><br>
+
+  <label>Position:</label><br>
+  <input type="text" [(ngModel)]="employee.position" name="position"><br><br>
+
+  <label>Hire Date:</label><br>
+  <input type="date" [(ngModel)]="employee.hiredate" name="hiredate"><br><br>
+
+  <label>Salary:</label><br>
+  <input type="number" [(ngModel)]="employee.salary" name="salary"><br><br>
+
+  <button type="submit">Save Employee</button>
+
+</form>
