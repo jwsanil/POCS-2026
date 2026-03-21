@@ -1,0 +1,242 @@
+ANGULAR + STRAPI PROJECT SETUP (FRESH SYSTEM / REINSTALL)
+
+Project Name: employee-customer-ui
+
+---
+
+1. REQUIRED SOFTWARE
+
+---
+
+Install Node.js (recommended LTS version)
+
+Check versions:
+
+node -v
+npm -v
+
+Install Angular CLI globally:
+
+npm install -g @angular/cli
+
+Check Angular version:
+
+ng version
+
+---
+
+2. OPEN PROJECT
+
+---
+
+Open terminal and go to project folder:
+
+cd employee-customer-ui
+
+---
+
+3. INSTALL PROJECT DEPENDENCIES
+
+---
+
+npm install
+
+---
+
+4. IF POWERSHELL BLOCKS ANGULAR COMMANDS
+
+---
+
+Run:
+
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+---
+
+5. START ANGULAR APPLICATION
+
+---
+
+ng serve --open
+
+If port already in use:
+
+ng serve --open --port 4201
+
+---
+
+6. START STRAPI BACKEND
+
+---
+
+Open another terminal
+
+Go to Strapi backend project folder:
+
+cd your-strapi-project
+
+Install packages:
+
+npm install
+
+Start Strapi:
+
+npm run develop
+
+---
+
+7. VERIFY APPLICATION URLS
+
+---
+
+Angular Frontend:
+
+http://localhost:4200
+
+Strapi Backend:
+
+http://localhost:1337
+
+API Test:
+
+http://localhost:1337/api/employees
+
+http://localhost:1337/api/customers
+
+---
+
+8. IF PROJECT FAILS AFTER COPYING TO NEW SYSTEM
+
+---
+
+Delete existing packages:
+
+rm -r node_modules
+
+Delete lock file:
+
+del package-lock.json
+
+Clean npm cache:
+
+npm cache clean --force
+
+Reinstall packages:
+
+npm install
+
+Run application again:
+
+ng serve --open
+
+---
+
+9. INSTALL ANGULAR MATERIAL (IF REQUIRED)
+
+---
+
+npm install @angular/material@16 @angular/cdk@16 @angular/animations@16
+
+Install sass support:
+
+npm install --save-dev sass
+
+---
+
+10. GENERATE COMPONENTS (IF NEEDED)
+
+---
+
+ng generate component components/employee-list
+ng generate component components/employee-form
+ng generate component components/customer-list
+ng generate component components/customer-form
+
+---
+
+11. GENERATE SERVICES (IF NEEDED)
+
+---
+
+ng generate service services/employee
+ng generate service services/customer
+
+---
+
+12. REQUIRED MODULES IN app.module.ts
+
+---
+
+Import required modules:
+
+HttpClientModule
+FormsModule
+BrowserAnimationsModule
+
+---
+
+13. DEFAULT ROUTING EXAMPLE
+
+---
+
+{ path: '', redirectTo: '/employees', pathMatch: 'full' }
+
+---
+
+14. STRAPI POST REQUEST FORMAT
+
+---
+
+Strapi requires POST data in this format:
+
+{
+data: object
+}
+
+Example Angular API call:
+
+this.http.post(url, {
+data: employee
+})
+
+---
+
+15. RUN BOTH SERVERS
+
+---
+
+Angular frontend must run:
+
+localhost:4200
+
+AND
+
+Strapi backend must run:
+
+localhost:1337
+
+Both must be running for API calls to work.
+
+---
+
+16. IF ANGULAR COMMAND NOT FOUND
+
+---
+
+Install Angular CLI globally again:
+
+npm install -g @angular/cli
+
+---
+
+17. IF PORT CONFLICT OCCURS
+
+---
+
+Check running process:
+
+netstat -ano | findstr :4200
+
+Run Angular on different port:
+
+ng serve --port 4201

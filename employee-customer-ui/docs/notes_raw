@@ -1,0 +1,411 @@
+ANGULAR + STRAPI NOTES
+
+---
+
+1. INSTALL / RUN COMMANDS
+
+---
+
+npm install
+
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+ng serve --open
+
+If PowerShell error:
+
+ng : File C:\Users\anilj\AppData\Roaming\npm\ng.ps1 cannot be loaded because running scripts is disabled on this system.
+
+Use:
+
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+---
+
+2. PROJECT SETUP
+
+---
+
+cd EC-DATA-Container-new-relic-demo-strapi-angular
+
+Generate components:
+
+ng generate component components/employee-list
+ng generate component components/employee-form
+ng generate component components/customer-list
+ng generate component components/customer-form
+
+Generate services:
+
+ng generate service services/employee
+ng generate service services/customer
+
+---
+
+3. EMPLOYEE SERVICE
+
+---
+
+employee.service.ts
+
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+@Injectable({
+providedIn: 'root'
+})
+export class EmployeeService {
+private apiUrl = 'http://localhost:1337/api/employees';
+
+constructor(private http: HttpClient) { }
+
+getEmployees(): Observable<any> {
+return this.http.get(this.apiUrl);
+}
+
+createEmployee(employee: any): Observable<any> {
+return this.http.post(this.apiUrl, {
+data: employee
+});
+}
+
+updateEmployee(id: number, employee: any): Observable<any> {
+return this.http.put(`${this.apiUrl}/${id}`, {
+data: employee
+});
+}
+
+deleteEmployee(id: number): Observable<any> {
+return this.http.delete(`${this.apiUrl}/${id}`);
+}
+}
+
+---
+
+4. EMPLOYEE LIST COMPONENT
+
+---
+
+employee-list.component.ts
+
+import { Component, OnInit } from '@angular/core';
+import { EmployeeService } from '../../services/employee.service';
+
+@Component({
+selector: 'app-employee-list',
+templateUrl: './employee-list.component.html',
+styleUrls: ['./employee-list.component.scss']
+})
+export class EmployeeListComponent implements OnInit {
+employees: any[] = [];
+
+constructor(private employeeService: EmployeeService) { }
+
+ngOnInit(): void {
+this.loadEmployees();
+}
+
+loadEmployees() {
+this.employeeService.getEmployees().subscribe(data => {
+this.employees = data.data;
+});
+}
+}
+
+employee-list.component.html
+
+<h2>Employee List</h2>
+<table>
+  <tr>
+    <th>ID</th>
+    <th>First Name</th>
+    <th>Last Name</th>
+    <th>Position</th>
+    <th>Salary</th>
+  </tr>
+  <tr *ngFor="let emp of employees">
+    <td>{{emp.id}}</td>
+    <td>{{emp.attributes.firstname}}</td>
+    <td>{{emp.attributes.lastname}}</td>
+    <td>{{emp.attributes.position}}</td>
+    <td>{{emp.attributes.salary}}</td>
+  </tr>
+</table>
+
+employee-list.component.scss
+
+table {
+border-collapse: collapse;
+width: 70%;
+}
+
+th, td {
+border: 1px solid black;
+padding: 8px;
+}
+
+th {
+background-color: #f2f2f2;
+}
+
+a {
+display: inline-block;
+margin-top: 10px;
+}
+
+---
+
+5. EMPLOYEE FORM
+
+---
+
+employee-form.component.ts
+
+import { Component } from '@angular/core';
+import { EmployeeService } from '../../services/employee.service';
+import { Router } from '@angular/router';
+
+@Component({
+selector: 'app-employee-form',
+templateUrl: './employee-form.component.html',
+styleUrls: ['./employee-form.component.scss']
+})
+export class EmployeeFormComponent {
+
+employee = {
+employeeid: 0,
+firstname: '',
+lastname: '',
+position: '',
+hiredate: '',
+salary: 0
+};
+
+constructor(
+private employeeService: EmployeeService,
+private router: Router
+) { }
+
+saveEmployee() {
+this.employeeService.createEmployee(this.employee).subscribe({
+next: (res) => {
+console.log('Employee saved:', res);
+alert('Employee saved successfully');
+this.router.navigate(['/customers/create']);
+},
+error: (err) => {
+console.error('Error saving employee:', err);
+}
+});
+}
+}
+
+---
+
+6. CUSTOMER SERVICE
+
+---
+
+customer.service.ts
+
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+@Injectable({
+providedIn: 'root'
+})
+export class CustomerService {
+private apiUrl = 'http://localhost:1337/api/customers';
+
+constructor(private http: HttpClient) { }
+
+getCustomers(): Observable<any> {
+return this.http.get(this.apiUrl);
+}
+
+createCustomer(customer: any): Observable<any> {
+return this.http.post(this.apiUrl, {
+data: customer
+});
+}
+
+updateCustomer(id: number, customer: any): Observable<any> {
+return this.http.put(`${this.apiUrl}/${id}`, {
+data: customer
+});
+}
+
+deleteCustomer(id: number): Observable<any> {
+return this.http.delete(`${this.apiUrl}/${id}`);
+}
+}
+
+---
+
+7. CUSTOMER LIST COMPONENT
+
+---
+
+customer-list.component.ts
+
+import { Component, OnInit } from '@angular/core';
+import { CustomerService } from '../../services/customer.service';
+
+@Component({
+selector: 'app-customer-list',
+templateUrl: './customer-list.component.html',
+styleUrls: ['./customer-list.component.scss']
+})
+export class CustomerListComponent implements OnInit {
+customers: any[] = [];
+
+constructor(private customerService: CustomerService) { }
+
+ngOnInit(): void {
+this.loadCustomers();
+}
+
+loadCustomers() {
+this.customerService.getCustomers().subscribe((data: any) => {
+this.customers = data.data.map((c: any) => ({
+id: c.id,
+customerid: c.customerid,
+firstname: c.firstname,
+lastname: c.lastname,
+email: c.email,
+phone: c.phone
+}));
+});
+}
+}
+
+customer-list.component.html
+
+<h2>Customer List</h2>
+<table border="1" cellspacing="0" cellpadding="5">
+  <tr>
+    <th>ID</th>
+    <th>First Name</th>
+    <th>Last Name</th>
+    <th>Email</th>
+  </tr>
+  <tr *ngFor="let cust of customers">
+    <td>{{cust.id}}</td>
+    <td>{{cust.firstname}}</td>
+    <td>{{cust.lastname}}</td>
+    <td>{{cust.email}}</td>
+  </tr>
+</table>
+
+<a routerLink="/customers/create">Add New Customer</a>
+
+---
+
+8. APP MODULE
+
+---
+
+app.module.ts
+
+import { HttpClientModule } from '@angular/common/http';
+
+@NgModule({
+imports: [
+BrowserModule,
+AppRoutingModule,
+HttpClientModule,
+FormsModule,
+BrowserAnimationsModule
+],
+})
+export class AppModule { }
+
+---
+
+9. ROUTING
+
+---
+
+app-routing.module.ts
+
+const routes: Routes = [
+{ path: 'employees', component: EmployeeListComponent },
+{ path: 'employees/create', component: EmployeeFormComponent },
+{ path: 'customers', component: CustomerListComponent },
+{ path: 'customers/create', component: CustomerFormComponent },
+{ path: '', redirectTo: '/employees', pathMatch: 'full' }
+];
+
+---
+
+10. APP COMPONENT
+
+---
+
+app.component.html
+
+<h1>My Employee & Customer App</h1>
+
+<nav>
+  <a routerLink="/employees">Employees</a> |
+  <a routerLink="/customers">Customers</a> |
+  <a routerLink="/employees/create">Add Employee</a> |
+  <a routerLink="/customers/create">Add Customer</a>
+</nav>
+
+<hr>
+
+<router-outlet></router-outlet>
+
+---
+
+11. ANGULAR EXECUTION FLOW
+
+---
+
+Step 1:
+Browser loads src/index.html
+
+<body>
+  <app-root></app-root>
+</body>
+
+Step 2:
+main.ts bootstraps Angular
+
+Step 3:
+app.component.html replaces app-root
+
+Final browser output:
+
+<body>
+  <app-root>
+    header + nav + routed component
+  </app-root>
+</body>
+
+---
+
+12. CLEAN INSTALL IF ERRORS
+
+---
+
+rm -r node_modules
+
+del package-lock.json
+
+npm cache clean --force
+
+npm install
+
+---
+
+13. MATERIAL INSTALL
+
+---
+
+npm install @angular/material@16 @angular/cdk@16 @angular/animations@16
+
+npm install --save-dev sass
